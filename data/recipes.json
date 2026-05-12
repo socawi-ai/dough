@@ -1,0 +1,46 @@
+[
+  {
+    "id": "pizza-classic",
+    "name": "Vanlig pizza",
+    "category": "pizza",
+    "pieces": 4,
+    "pieceWeight": 260,
+    "hydration": 65,
+    "salt": 2.5,
+    "yeast": 0.25,
+    "oil": 2
+  },
+  {
+    "id": "loaf-country",
+    "name": "Vanlig limpa",
+    "category": "loaf",
+    "pieces": 2,
+    "pieceWeight": 800,
+    "hydration": 70,
+    "salt": 2,
+    "yeast": 1,
+    "oil": 3
+  },
+  {
+    "id": "test-pan-pizza-mp2ja3x8",
+    "name": "Pan pizza",
+    "category": "pizza",
+    "pieces": 3,
+    "pieceWeight": 280,
+    "hydration": 66,
+    "salt": 2.6,
+    "yeast": 0.25,
+    "oil": 2.2
+  },
+  {
+    "id": "napolitansk-mp2kwlyz",
+    "name": "Napolitansk",
+    "category": "pizza",
+    "pieces": 4,
+    "pieceWeight": 250,
+    "hydration": 65,
+    "salt": 2.5,
+    "yeast": 0.25,
+    "oil": 2
+  }
+]

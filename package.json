@@ -1,0 +1,22 @@
+{
+  "name": "project_2_dough",
+  "version": "0.5.0",
+  "private": true,
+  "description": "Simple Node.js server with PM2 config",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "pm2:start": "pm2 start ecosystem.config.js --only project_2_dough",
+    "pm2:start:dev": "pm2 start ecosystem.config.js --only project_2_dough_dev",
+    "pm2:restart": "pm2 restart project_2_dough",
+    "pm2:restart:dev": "pm2 restart project_2_dough_dev",
+    "pm2:stop": "pm2 stop project_2_dough",
+    "pm2:stop:dev": "pm2 stop project_2_dough_dev",
+    "pm2:delete": "pm2 delete project_2_dough",
+    "pm2:delete:dev": "pm2 delete project_2_dough_dev",
+    "pm2:logs": "pm2 logs project_2_dough",
+    "pm2:logs:dev": "pm2 logs project_2_dough_dev",
+    "pm2:save": "pm2 save",
+    "pm2:startup": "pm2 startup"
+  }
+}

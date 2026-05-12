@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Degkalkylator</title>
+    <style>
+      :root {
+        --bg: #f4f1ea;
+        --panel: #fffaf0;
+        --ink: #2f231a;
+        --muted: #6e5d50;
+        --accent: #cc6b2c;
+        --line: #e9dcc8;
+        --ok: #236b3e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 10%, #fffdf8 0, transparent 40%),
+          radial-gradient(circle at 90% 90%, #f5e8d5 0, transparent 35%),
+          var(--bg);
+      }
+      .wrap { max-width: 980px; margin: 2rem auto; padding: 1rem; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 14px 30px rgba(47, 35, 26, 0.08);
+      }
+      h1 { margin: 0 0 0.4rem; font-size: 1.7rem; }
+      .sub { margin: 0 0 1rem; color: var(--muted); }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; }
+      label { font-size: 0.92rem; color: var(--muted); }
+      input, select {
+        width: 100%; margin-top: 0.25rem; border: 1px solid var(--line);
+        border-radius: 10px; padding: 0.55rem 0.65rem; font: inherit; background: #fff;
+      }
+      .row { margin-top: 1rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      button {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 0.6rem 0.8rem;
+        font: inherit;
+        cursor: pointer;
+      }
+      .btn-main { background: #ffe8d7; color: #8a3f11; border-color: #f0c8a8; }
+      .btn-danger { background: #fce8e8; color: #8f1d1d; border-color: #efc4c4; }
+      .status { margin-top: 0.7rem; min-height: 1.2rem; color: var(--ok); font-size: 0.92rem; }
+      .result {
+        margin-top: 1rem; padding: 0.95rem; border: 1px dashed var(--accent);
+        border-radius: 12px; background: #fff;
+      }
+      .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+      .tile { padding: 0.65rem; background: #fffaf4; border: 1px solid var(--line); border-radius: 10px; }
+      .k { margin: 0; color: var(--muted); font-size: 0.85rem; }
+      .v { margin: 0.2rem 0 0; font-size: 1.1rem; font-weight: 700; }
+      .badge {
+        display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px;
+        background: #ffe8d7; color: #8a3f11; font-size: 0.8rem; margin-left: 0.35rem;
+      }
+      @media (max-width: 700px) { .grid, .result-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="card">
+        <h1>Anpassningsbar Degkalkylator</h1>
+        <p class="sub">Kalkylator för pizza och brödlimpa, endast i gram.</p>
+
+        <div class="grid">
+          <label>
+            Receptförval
+            <select id="recipeSelect"></select>
+          </label>
+
+          <label>
+            Receptnamn
+            <input id="recipeName" type="text" placeholder="t.ex. Helgpizza" />
+          </label>
+
+          <label>
+            Kategori
+            <select id="category">
+              <option value="pizza">Pizza</option>
+              <option value="loaf">Limpa</option>
+            </select>
+          </label>
+
+          <label>
+            Antal delar
+            <input id="pieces" type="number" min="1" step="1" value="4" />
+          </label>
+
+          <label>
+            Vikt per del (g)
+            <input id="pieceWeight" type="number" min="1" step="1" value="260" />
+          </label>
+
+          <label>
+            Hydrering (%)
+            <input id="hydration" type="number" min="0" step="0.1" value="65" />
+          </label>
+
+          <label>
+            Salt (%)
+            <input id="salt" type="number" min="0" step="0.1" value="2.5" />
+          </label>
+
+          <label>
+            Jäst (%)
+            <input id="yeast" type="number" min="0" step="0.01" value="0.25" />
+          </label>
+
+          <label>
+            Olja (%)
+            <input id="oil" type="number" min="0" step="0.1" value="2" />
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="newRecipe">Ny tom</button>
+          <button id="saveNew" class="btn-main">Spara som nytt recept</button>
+          <button id="updateRecipe">Uppdatera valt recept</button>
+          <button id="deleteRecipe" class="btn-danger">Ta bort valt recept</button>
+        </div>
+        <div class="status" id="status"></div>
+
+        <div class="result" id="result"></div>
+      </section>
+    </div>
+
+    <script>
+      const ids = ['recipeSelect', 'recipeName', 'category', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil'];
+      const el = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+      const result = document.getElementById('result');
+      const status = document.getElementById('status');
+      const saveNewBtn = document.getElementById('saveNew');
+      const updateBtn = document.getElementById('updateRecipe');
+      const deleteBtn = document.getElementById('deleteRecipe');
+      const newBtn = document.getElementById('newRecipe');
+
+      let recipes = [];
+      const categoryLabels = { pizza: 'Pizza', loaf: 'Limpa' };
+
+      function grams(n) {
+        return `${Math.round(n)} g`;
+      }
+
+      function showStatus(msg, isError = false) {
+        status.textContent = msg;
+        status.style.color = isError ? '#9b1c1c' : '#236b3e';
+      }
+
+      function recipeFromInputs() {
+        return {
+          name: el.recipeName.value.trim(),
+          category: el.category.value,
+          pieces: Number(el.pieces.value),
+          pieceWeight: Number(el.pieceWeight.value),
+          hydration: Number(el.hydration.value),
+          salt: Number(el.salt.value),
+          yeast: Number(el.yeast.value),
+          oil: Number(el.oil.value),
+        };
+      }
+
+      function applyRecipe(recipe) {
+        el.recipeName.value = recipe.name;
+        el.category.value = recipe.category;
+        el.pieces.value = recipe.pieces;
+        el.pieceWeight.value = recipe.pieceWeight;
+        el.hydration.value = recipe.hydration;
+        el.salt.value = recipe.salt;
+        el.yeast.value = recipe.yeast;
+        el.oil.value = recipe.oil;
+        calculate();
+      }
+
+      function renderRecipeSelect(selectedId) {
+        el.recipeSelect.innerHTML = recipes
+          .map((r) => `<option value="${r.id}">${r.name} (${categoryLabels[r.category] || r.category})</option>`)
+          .join('');
+
+        if (recipes.length === 0) {
+          el.recipeSelect.innerHTML = '<option value="">Inga recept ännu</option>';
+          return;
+        }
+
+        const targetId = selectedId || recipes[0].id;
+        el.recipeSelect.value = targetId;
+        const selected = recipes.find((r) => r.id === targetId) || recipes[0];
+        applyRecipe(selected);
+      }
+
+      async function loadRecipes(selectedId) {
+        const res = await fetch('/api/recipes');
+        if (!res.ok) {
+          throw new Error('Kunde inte ladda recept');
+        }
+        recipes = await res.json();
+        renderRecipeSelect(selectedId);
+      }
+
+      function calculate() {
+        const pieces = Number(el.pieces.value);
+        const pieceWeight = Number(el.pieceWeight.value);
+        const hydration = Number(el.hydration.value) / 100;
+        const salt = Number(el.salt.value) / 100;
+        const yeast = Number(el.yeast.value) / 100;
+        const oil = Number(el.oil.value) / 100;
+
+        const totalDough = pieces * pieceWeight;
+        const factor = 1 + hydration + salt + yeast + oil;
+        const flour = totalDough / factor;
+        const water = flour * hydration;
+        const saltG = flour * salt;
+        const yeastG = flour * yeast;
+        const oilG = flour * oil;
+
+        result.innerHTML = `
+          <div>
+            Total deg: <strong>${grams(totalDough)}</strong>
+            <span class="badge">${categoryLabels[el.category.value] || el.category.value}recept</span>
+          </div>
+          <div class="result-grid">
+            <div class="tile"><p class="k">Mjöl</p><p class="v">${grams(flour)}</p></div>
+            <div class="tile"><p class="k">Vatten</p><p class="v">${grams(water)}</p></div>
+            <div class="tile"><p class="k">Salt</p><p class="v">${grams(saltG)}</p></div>
+            <div class="tile"><p class="k">Jäst</p><p class="v">${grams(yeastG)}</p></div>
+            <div class="tile"><p class="k">Olja</p><p class="v">${grams(oilG)}</p></div>
+            <div class="tile"><p class="k">Per del</p><p class="v">${grams(pieceWeight)}</p></div>
+          </div>
+        `;
+      }
+
+      el.recipeSelect.addEventListener('change', () => {
+        const selected = recipes.find((r) => r.id === el.recipeSelect.value);
+        if (selected) {
+          applyRecipe(selected);
+          showStatus(`Laddade recept: ${selected.name}`);
+        }
+      });
+
+      ['recipeName', 'category', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil']
+        .forEach((id) => el[id].addEventListener('input', calculate));
+
+      newBtn.addEventListener('click', () => {
+        el.recipeSelect.value = '';
+        applyRecipe({
+          name: '',
+          category: 'pizza',
+          pieces: 4,
+          pieceWeight: 250,
+          hydration: 65,
+          salt: 2.5,
+          yeast: 0.25,
+          oil: 2,
+        });
+        showStatus('Nytt tomt recept klart. Ange namn och spara.');
+      });
+
+      saveNewBtn.addEventListener('click', async () => {
+        try {
+          const payload = recipeFromInputs();
+          const res = await fetch('/api/recipes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Kunde inte spara recept');
+          }
+          await loadRecipes(data.id);
+          showStatus(`Sparade nytt recept: ${data.name}`);
+        } catch (err) {
+          showStatus(err.message, true);
+        }
+      });
+
+      updateBtn.addEventListener('click', async () => {
+        try {
+          const id = el.recipeSelect.value;
+          if (!id) {
+            throw new Error('Välj ett recept först för att uppdatera');
+          }
+          const payload = recipeFromInputs();
+          const res = await fetch(`/api/recipes/${encodeURIComponent(id)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Kunde inte uppdatera recept');
+          }
+          await loadRecipes(data.id);
+          showStatus(`Uppdaterade recept: ${data.name}`);
+        } catch (err) {
+          showStatus(err.message, true);
+        }
+      });
+
+      deleteBtn.addEventListener('click', async () => {
+        try {
+          const id = el.recipeSelect.value;
+          if (!id) {
+            throw new Error('Välj ett recept först för att ta bort');
+          }
+
+          const selected = recipes.find((r) => r.id === id);
+          const recipeName = selected ? selected.name : 'detta recept';
+          if (!window.confirm(`Ta bort recept \"${recipeName}\"?`)) {
+            return;
+          }
+
+          const res = await fetch(`/api/recipes/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Kunde inte ta bort recept');
+          }
+
+          await loadRecipes();
+          showStatus(`Tog bort recept: ${data.deleted.name}`);
+        } catch (err) {
+          showStatus(err.message, true);
+        }
+      });
+
+      (async () => {
+        try {
+          await loadRecipes();
+          showStatus('Recept laddade från databasen.');
+        } catch (err) {
+          showStatus(err.message, true);
+        }
+      })();
+    </script>
+  </body>
+</html>
