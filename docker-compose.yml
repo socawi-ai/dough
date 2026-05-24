@@ -1,0 +1,10 @@
+services:
+  dough:
+    image: ghcr.io/socawi-ai/dough:latest
+    container_name: dough
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
