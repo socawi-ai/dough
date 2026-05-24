@@ -1,28 +1,62 @@
-# Dough Calculator
+# Dough Calculator (Docker)
 
-Customizable dough calculator for pizza and bread loaves, with all measurements in grams.
+This project is published as a ready-to-run Docker image.
 
-## Features
+Image:
 
-- Dough calculation using baker's percentages
-- Preset recipe management
-- Create, update, and delete recipes
-- Lightweight JSON-backed recipe storage
-- PM2 production and development process configs
+- `ghcr.io/socawi-ai/dough:latest`
 
-## Run
+App default port:
+
+- `3001`
+
+## Quick Start
 
 ```bash
-npm start
+docker pull ghcr.io/socawi-ai/dough:latest
+docker run -d --name dough -p 3001:3001 --restart unless-stopped ghcr.io/socawi-ai/dough:latest
 ```
 
-Server runs on port `3001` by default.
+Open in browser:
 
-## PM2
+- `http://<your-server-ip>:3001`
+
+## Run with Docker Compose
+
+Use the included `docker-compose.yml`:
 
 ```bash
-npm run pm2:start
-npm run pm2:start:dev
-npm run pm2:restart
-npm run pm2:logs
+docker compose pull
+docker compose up -d
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+## Update to Latest Image
+
+### Docker run setup
+
+```bash
+docker pull ghcr.io/socawi-ai/dough:latest
+docker stop dough
+docker rm dough
+docker run -d --name dough -p 3001:3001 --restart unless-stopped ghcr.io/socawi-ai/dough:latest
+```
+
+### Docker Compose setup
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+## Logs and Status
+
+```bash
+docker ps
+docker logs -f dough
 ```
