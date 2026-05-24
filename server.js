@@ -19,6 +19,8 @@ const defaultRecipes = [
     salt: 2.5,
     yeast: 0.25,
     oil: 2,
+    milk: 0,
+    butter: 0,
   },
   {
     id: 'loaf-country',
@@ -30,6 +32,47 @@ const defaultRecipes = [
     salt: 2,
     yeast: 1,
     oil: 3,
+    milk: 0,
+    butter: 0,
+  },
+  {
+    id: 'breadmachine-basic-1000',
+    name: 'Bakmaskin Basic 1000g',
+    category: 'breadmachine',
+    pieces: 1,
+    pieceWeight: 1000,
+    hydration: 62,
+    salt: 1.8,
+    yeast: 1.2,
+    oil: 2,
+    milk: 0,
+    butter: 0,
+  },
+  {
+    id: 'breadmachine-mjolkbrod-1000',
+    name: 'Bakmaskin Mjölkbröd 1000g',
+    category: 'breadmachine',
+    pieces: 1,
+    pieceWeight: 1000,
+    hydration: 60,
+    salt: 1.8,
+    yeast: 1.4,
+    oil: 2,
+    milk: 18,
+    butter: 0,
+  },
+  {
+    id: 'breadmachine-brioche-1000',
+    name: 'Bakmaskin Brioche 1000g',
+    category: 'breadmachine',
+    pieces: 1,
+    pieceWeight: 1000,
+    hydration: 52,
+    salt: 1.7,
+    yeast: 1.8,
+    oil: 0,
+    milk: 12,
+    butter: 18,
   },
 ];
 
@@ -37,6 +80,26 @@ async function ensureRecipeDb() {
   await fsp.mkdir(DATA_DIR, { recursive: true });
   if (!fs.existsSync(RECIPES_PATH)) {
     await fsp.writeFile(RECIPES_PATH, JSON.stringify(defaultRecipes, null, 2), 'utf8');
+    return;
+  }
+
+  const raw = await fsp.readFile(RECIPES_PATH, 'utf8');
+  const existing = JSON.parse(raw);
+  if (!Array.isArray(existing)) {
+    await fsp.writeFile(RECIPES_PATH, JSON.stringify(defaultRecipes, null, 2), 'utf8');
+    return;
+  }
+
+  const ids = new Set(existing.map((r) => r.id));
+  let changed = false;
+  for (const recipe of defaultRecipes) {
+    if (!ids.has(recipe.id)) {
+      existing.push(recipe);
+      changed = true;
+    }
+  }
+  if (changed) {
+    await fsp.writeFile(RECIPES_PATH, JSON.stringify(existing, null, 2), 'utf8');
   }
 }
 
@@ -88,8 +151,8 @@ function sanitizeRecipe(input) {
   if (!name) {
     throw new Error('Recipe name is required');
   }
-  if (!['pizza', 'loaf'].includes(category)) {
-    throw new Error('Category must be pizza or loaf');
+  if (!['pizza', 'loaf', 'breadmachine'].includes(category)) {
+    throw new Error('Category must be pizza, loaf or breadmachine');
   }
 
   return {
@@ -101,6 +164,8 @@ function sanitizeRecipe(input) {
     salt: Math.max(0, toNum(input.salt, 0)),
     yeast: Math.max(0, toNum(input.yeast, 0)),
     oil: Math.max(0, toNum(input.oil, 0)),
+    milk: Math.max(0, toNum(input.milk, 0)),
+    butter: Math.max(0, toNum(input.butter, 0)),
   };
 }
 

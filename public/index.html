@@ -34,6 +34,21 @@
       }
       h1 { margin: 0 0 0.4rem; font-size: 1.7rem; }
       .sub { margin: 0 0 1rem; color: var(--muted); }
+      .tabs { display: flex; gap: 0.6rem; margin: 0 0 1rem; }
+      .tab-btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 0.5rem 0.9rem;
+        font: inherit;
+        cursor: pointer;
+      }
+      .tab-btn.active {
+        background: #ffe8d7;
+        border-color: #f0c8a8;
+        color: #8a3f11;
+        font-weight: 700;
+      }
       .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; }
       label { font-size: 0.92rem; color: var(--muted); }
       input, select {
@@ -72,6 +87,11 @@
       <section class="card">
         <h1>Anpassningsbar Degkalkylator</h1>
         <p class="sub">Kalkylator för pizza och brödlimpa, endast i gram.</p>
+        <div class="tabs">
+          <button type="button" id="tabPizza" class="tab-btn active">Pizza</button>
+          <button type="button" id="tabLoaf" class="tab-btn">Limpor</button>
+          <button type="button" id="tabMachine" class="tab-btn">Bakmaskin</button>
+        </div>
 
         <div class="grid">
           <label>
@@ -86,14 +106,24 @@
 
           <label>
             Kategori
-            <select id="category">
+            <select id="category" disabled>
               <option value="pizza">Pizza</option>
               <option value="loaf">Limpa</option>
+              <option value="breadmachine">Bakmaskin</option>
             </select>
           </label>
 
-          <label>
-            Antal delar
+          <label id="machineSizeWrap" style="display: none;">
+            Bakmaskinsstorlek
+            <select id="machineSize">
+              <option value="500">500 g</option>
+              <option value="1000" selected>1000 g</option>
+              <option value="1500">1500 g</option>
+            </select>
+          </label>
+
+          <label id="piecesWrap">
+            <span id="piecesLabel">Antal delar</span>
             <input id="pieces" type="number" min="1" step="1" value="4" />
           </label>
 
@@ -121,6 +151,16 @@
             Olja (%)
             <input id="oil" type="number" min="0" step="0.1" value="2" />
           </label>
+
+          <label>
+            Mjölk (%)
+            <input id="milk" type="number" min="0" step="0.1" value="0" />
+          </label>
+
+          <label>
+            Smör (%)
+            <input id="butter" type="number" min="0" step="0.1" value="0" />
+          </label>
         </div>
 
         <div class="row">
@@ -136,7 +176,7 @@
     </div>
 
     <script>
-      const ids = ['recipeSelect', 'recipeName', 'category', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil'];
+      const ids = ['recipeSelect', 'recipeName', 'category', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil', 'milk', 'butter'];
       const el = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
       const result = document.getElementById('result');
       const status = document.getElementById('status');
@@ -144,9 +184,28 @@
       const updateBtn = document.getElementById('updateRecipe');
       const deleteBtn = document.getElementById('deleteRecipe');
       const newBtn = document.getElementById('newRecipe');
+      const tabPizza = document.getElementById('tabPizza');
+      const tabLoaf = document.getElementById('tabLoaf');
+      const tabMachine = document.getElementById('tabMachine');
+      const machineSizeWrap = document.getElementById('machineSizeWrap');
+      const machineSize = document.getElementById('machineSize');
+      const piecesWrap = document.getElementById('piecesWrap');
+      const piecesLabel = document.getElementById('piecesLabel');
 
       let recipes = [];
-      const categoryLabels = { pizza: 'Pizza', loaf: 'Limpa' };
+      const categoryLabels = { pizza: 'Pizza', loaf: 'Limpa', breadmachine: 'Bakmaskin' };
+      let activeCategory = 'pizza';
+
+      function defaultRecipeForCategory(category, forcedWeight) {
+        if (category === 'pizza') {
+          return { name: '', category, pieces: 4, pieceWeight: 250, hydration: 65, salt: 2.5, yeast: 0.25, oil: 2, milk: 0, butter: 0 };
+        }
+        if (category === 'loaf') {
+          return { name: '', category, pieces: 2, pieceWeight: 700, hydration: 70, salt: 2.5, yeast: 1, oil: 2, milk: 0, butter: 0 };
+        }
+        const bw = Number(forcedWeight || machineSize.value || 1000);
+        return { name: '', category, pieces: 1, pieceWeight: bw, hydration: 62, salt: 1.8, yeast: 1.2, oil: 2, milk: 0, butter: 0 };
+      }
 
       function grams(n) {
         return `${Math.round(n)} g`;
@@ -167,6 +226,8 @@
           salt: Number(el.salt.value),
           yeast: Number(el.yeast.value),
           oil: Number(el.oil.value),
+          milk: Number(el.milk.value),
+          butter: Number(el.butter.value),
         };
       }
 
@@ -179,22 +240,53 @@
         el.salt.value = recipe.salt;
         el.yeast.value = recipe.yeast;
         el.oil.value = recipe.oil;
+        el.milk.value = recipe.milk || 0;
+        el.butter.value = recipe.butter || 0;
+        if (recipe.category === 'breadmachine' && ['500', '1000', '1500'].includes(String(recipe.pieceWeight))) {
+          machineSize.value = String(recipe.pieceWeight);
+        }
         calculate();
       }
 
+      function filteredRecipes() {
+        return recipes.filter((r) => r.category === activeCategory);
+      }
+
+      function setActiveCategory(category) {
+        activeCategory = category;
+        el.category.value = category;
+        tabPizza.classList.toggle('active', category === 'pizza');
+        tabLoaf.classList.toggle('active', category === 'loaf');
+        tabMachine.classList.toggle('active', category === 'breadmachine');
+        machineSizeWrap.style.display = category === 'breadmachine' ? 'block' : 'none';
+        piecesWrap.style.display = category === 'breadmachine' ? 'none' : 'block';
+        if (category === 'pizza') {
+          piecesLabel.textContent = 'Antal degbollar';
+        } else if (category === 'loaf') {
+          piecesLabel.textContent = 'Antal limpor';
+        } else {
+          piecesLabel.textContent = 'Antal delar';
+        }
+        if (category === 'breadmachine') {
+          el.pieces.value = 1;
+        }
+      }
+
       function renderRecipeSelect(selectedId) {
-        el.recipeSelect.innerHTML = recipes
+        const tabRecipes = filteredRecipes();
+        el.recipeSelect.innerHTML = tabRecipes
           .map((r) => `<option value="${r.id}">${r.name} (${categoryLabels[r.category] || r.category})</option>`)
           .join('');
 
-        if (recipes.length === 0) {
+        if (tabRecipes.length === 0) {
           el.recipeSelect.innerHTML = '<option value="">Inga recept ännu</option>';
+          applyRecipe(defaultRecipeForCategory(activeCategory));
           return;
         }
 
-        const targetId = selectedId || recipes[0].id;
+        const targetId = selectedId || tabRecipes[0].id;
         el.recipeSelect.value = targetId;
-        const selected = recipes.find((r) => r.id === targetId) || recipes[0];
+        const selected = tabRecipes.find((r) => r.id === targetId) || tabRecipes[0];
         applyRecipe(selected);
       }
 
@@ -208,20 +300,24 @@
       }
 
       function calculate() {
-        const pieces = Number(el.pieces.value);
+        const pieces = activeCategory === 'breadmachine' ? 1 : Number(el.pieces.value);
         const pieceWeight = Number(el.pieceWeight.value);
         const hydration = Number(el.hydration.value) / 100;
         const salt = Number(el.salt.value) / 100;
         const yeast = Number(el.yeast.value) / 100;
         const oil = Number(el.oil.value) / 100;
+        const milk = Number(el.milk.value) / 100;
+        const butter = Number(el.butter.value) / 100;
 
         const totalDough = pieces * pieceWeight;
-        const factor = 1 + hydration + salt + yeast + oil;
+        const factor = 1 + hydration + salt + yeast + oil + milk + butter;
         const flour = totalDough / factor;
         const water = flour * hydration;
         const saltG = flour * salt;
         const yeastG = flour * yeast;
         const oilG = flour * oil;
+        const milkG = flour * milk;
+        const butterG = flour * butter;
 
         result.innerHTML = `
           <div>
@@ -234,34 +330,55 @@
             <div class="tile"><p class="k">Salt</p><p class="v">${grams(saltG)}</p></div>
             <div class="tile"><p class="k">Jäst</p><p class="v">${grams(yeastG)}</p></div>
             <div class="tile"><p class="k">Olja</p><p class="v">${grams(oilG)}</p></div>
+            <div class="tile"><p class="k">Mjölk</p><p class="v">${grams(milkG)}</p></div>
+            <div class="tile"><p class="k">Smör</p><p class="v">${grams(butterG)}</p></div>
             <div class="tile"><p class="k">Per del</p><p class="v">${grams(pieceWeight)}</p></div>
           </div>
         `;
       }
 
       el.recipeSelect.addEventListener('change', () => {
-        const selected = recipes.find((r) => r.id === el.recipeSelect.value);
+        const selected = filteredRecipes().find((r) => r.id === el.recipeSelect.value);
         if (selected) {
           applyRecipe(selected);
           showStatus(`Laddade recept: ${selected.name}`);
         }
       });
 
-      ['recipeName', 'category', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil']
+      ['recipeName', 'pieces', 'pieceWeight', 'hydration', 'salt', 'yeast', 'oil', 'milk', 'butter']
         .forEach((id) => el[id].addEventListener('input', calculate));
+
+      tabPizza.addEventListener('click', () => {
+        setActiveCategory('pizza');
+        renderRecipeSelect();
+        showStatus('Flik: Pizza');
+      });
+
+      tabLoaf.addEventListener('click', () => {
+        setActiveCategory('loaf');
+        renderRecipeSelect();
+        showStatus('Flik: Limpor');
+      });
+
+      tabMachine.addEventListener('click', () => {
+        setActiveCategory('breadmachine');
+        renderRecipeSelect();
+        showStatus('Flik: Bakmaskin');
+      });
+
+      machineSize.addEventListener('change', () => {
+        if (activeCategory !== 'breadmachine') {
+          return;
+        }
+        el.pieces.value = 1;
+        el.pieceWeight.value = Number(machineSize.value);
+        calculate();
+        showStatus(`Bakmaskin: ${machineSize.value} g`);
+      });
 
       newBtn.addEventListener('click', () => {
         el.recipeSelect.value = '';
-        applyRecipe({
-          name: '',
-          category: 'pizza',
-          pieces: 4,
-          pieceWeight: 250,
-          hydration: 65,
-          salt: 2.5,
-          yeast: 0.25,
-          oil: 2,
-        });
+        applyRecipe(defaultRecipeForCategory(activeCategory));
         showStatus('Nytt tomt recept klart. Ange namn och spara.');
       });
 
@@ -337,6 +454,7 @@
 
       (async () => {
         try {
+          setActiveCategory('pizza');
           await loadRecipes();
           showStatus('Recept laddade från databasen.');
         } catch (err) {

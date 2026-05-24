@@ -8,7 +8,9 @@
     "hydration": 65,
     "salt": 2.5,
     "yeast": 0.25,
-    "oil": 2
+    "oil": 2,
+    "milk": 0,
+    "butter": 0
   },
   {
     "id": "loaf-country",
@@ -19,7 +21,9 @@
     "hydration": 70,
     "salt": 2,
     "yeast": 1,
-    "oil": 3
+    "oil": 3,
+    "milk": 0,
+    "butter": 0
   },
   {
     "id": "test-pan-pizza-mp2ja3x8",
@@ -30,7 +34,9 @@
     "hydration": 66,
     "salt": 2.6,
     "yeast": 0.25,
-    "oil": 2.2
+    "oil": 2.2,
+    "milk": 0,
+    "butter": 0
   },
   {
     "id": "napolitansk-mp2kwlyz",
@@ -41,6 +47,47 @@
     "hydration": 65,
     "salt": 2.5,
     "yeast": 0.25,
-    "oil": 2
+    "oil": 2,
+    "milk": 0,
+    "butter": 0
+  },
+  {
+    "id": "breadmachine-basic-1000",
+    "name": "Bakmaskin Basic 1000g",
+    "category": "breadmachine",
+    "pieces": 1,
+    "pieceWeight": 1000,
+    "hydration": 62,
+    "salt": 1.8,
+    "yeast": 1.2,
+    "oil": 2,
+    "milk": 0,
+    "butter": 0
+  },
+  {
+    "id": "breadmachine-mjolkbrod-1000",
+    "name": "Bakmaskin Mjölkbröd 1000g",
+    "category": "breadmachine",
+    "pieces": 1,
+    "pieceWeight": 1000,
+    "hydration": 60,
+    "salt": 1.8,
+    "yeast": 1.4,
+    "oil": 2,
+    "milk": 18,
+    "butter": 0
+  },
+  {
+    "id": "breadmachine-brioche-1000",
+    "name": "Bakmaskin Brioche 1000g",
+    "category": "breadmachine",
+    "pieces": 1,
+    "pieceWeight": 1000,
+    "hydration": 52,
+    "salt": 1.7,
+    "yeast": 1.8,
+    "oil": 0,
+    "milk": 12,
+    "butter": 18
   }
 ]
