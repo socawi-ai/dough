@@ -10,7 +10,11 @@
     "yeast": 0.25,
     "oil": 2,
     "milk": 0,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 90,
+    "bakeMinutes": 8,
+    "bakeTemp": 250,
+    "instructions": "Blanda mjöl, vatten, salt och jäst till en smidig deg.\nKnåda degen i cirka 10 minuter tills den är elastisk.\nLåt degen jäsa övertäckt tills den dubblat i storlek.\nDela degen i bollar och forma. Låt jäsa en kort stund till.\nKavla eller töj ut till bottnar och klä med topping.\nGrädda i het ugn tills kanten är gyllenbrun."
   },
   {
     "id": "loaf-country",
@@ -23,7 +27,11 @@
     "yeast": 1,
     "oil": 3,
     "milk": 0,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 150,
+    "bakeMinutes": 40,
+    "bakeTemp": 220,
+    "instructions": "Blanda mjöl, vatten, salt och jäst till en deg.\nKnåda degen väl och låt den jäsa övertäckt till dubbel storlek.\nForma limpor och lägg i formar eller på plåt.\nLåt jäsa en andra gång tills degen känns lätt och luftig.\nGrädda tills brödet låter ihåligt när du knackar på undersidan.\nLåt svalna på galler innan du skär i brödet."
   },
   {
     "id": "test-pan-pizza-mp2ja3x8",
@@ -36,7 +44,11 @@
     "yeast": 0.25,
     "oil": 2.2,
     "milk": 0,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 90,
+    "bakeMinutes": 20,
+    "bakeTemp": 220,
+    "instructions": "Blanda mjöl, vatten, salt och jäst till en smidig deg.\nKnåda degen i cirka 10 minuter tills den är elastisk.\nLåt degen jäsa övertäckt tills den dubblat i storlek.\nOlja pannorna väl och tryck ut degen i dem, låt vila 20-30 minuter.\nKlä med topping och grädda tills botten är gyllenbrun och krispig."
   },
   {
     "id": "napolitansk-mp2kwlyz",
@@ -49,7 +61,11 @@
     "yeast": 0.25,
     "oil": 2,
     "milk": 0,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 180,
+    "bakeMinutes": 3,
+    "bakeTemp": 300,
+    "instructions": "Blanda mjöl, vatten, salt och jäst till en smidig deg.\nKnåda degen i cirka 10 minuter tills den är elastisk.\nLåt degen jäsa långsamt, gärna 3 timmar i rumstemperatur eller över natten i kylen.\nDela i bollar och forma försiktigt, undvik att slå ut all luft.\nTöj ut bottnarna för hand, klä med lite topping.\nGrädda mycket hett (så hett ugnen klarar) tills kanten bubblar och bränns lätt."
   },
   {
     "id": "breadmachine-basic-1000",
@@ -62,7 +78,11 @@
     "yeast": 1.2,
     "oil": 2,
     "milk": 0,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 0,
+    "bakeMinutes": 0,
+    "bakeTemp": 0,
+    "instructions": "Häll i vätska och olja i bakformen.\nTillsätt mjöl så det täcker vätskan helt.\nLägg salt i ett hörn och jäst i ett annat, utan direktkontakt.\nVälj basprogrammet och storlek 1000g på bakmaskinen och starta."
   },
   {
     "id": "breadmachine-mjolkbrod-1000",
@@ -75,7 +95,11 @@
     "yeast": 1.4,
     "oil": 2,
     "milk": 18,
-    "butter": 0
+    "butter": 0,
+    "proofMinutes": 0,
+    "bakeMinutes": 0,
+    "bakeTemp": 0,
+    "instructions": "Häll i vätska, mjölk och olja i bakformen.\nTillsätt mjöl så det täcker vätskan helt.\nLägg salt i ett hörn och jäst i ett annat, utan direktkontakt.\nVälj programmet för mjukt/mjölkbröd och storlek 1000g, starta sedan."
   },
   {
     "id": "breadmachine-brioche-1000",
@@ -88,6 +112,10 @@
     "yeast": 1.8,
     "oil": 0,
     "milk": 12,
-    "butter": 18
+    "butter": 18,
+    "proofMinutes": 0,
+    "bakeMinutes": 0,
+    "bakeTemp": 0,
+    "instructions": "Häll i vätska och mjölk i bakformen.\nTillsätt mjöl så det täcker vätskan helt.\nLägg det mjuka smöret ovanpå mjölet.\nLägg salt i ett hörn och jäst i ett annat, utan direktkontakt.\nVälj programmet för söta/rika degar (t.ex. brioche eller kaka) och starta."
   }
 ]
