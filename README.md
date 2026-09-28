@@ -1,6 +1,6 @@
 # Dough Calculator (Docker)
 
-Current version: **1.2**
+Current version: **1.3**
 
 A recipe calculator for pizza, bread loaves, and bread-machine doughs.
 Enter the number of pieces and weight per piece, and it works out exact
@@ -77,7 +77,27 @@ docker ps
 docker logs -f dough
 ```
 
+## Install as an App (Android/iOS)
+
+The app is an installable PWA. On Android (Chrome), open the site and use
+"Add to Home screen" (or the install prompt) to get a home-screen icon that
+opens in its own window, with the last-loaded recipes available offline.
+iOS Safari supports the same via Share → "Add to Home Screen".
+
+This requires a secure context: it works out of the box over `localhost`,
+but installing/offline support **will not work over plain HTTP on a LAN
+address** (e.g. `http://192.168.1.x:3001`) — put the app behind HTTPS (a
+reverse proxy with a certificate, or a tunnel like Tailscale/Cloudflare
+Tunnel) if you want to install it from another device on your network.
+
 ## Updates
+
+### 1.3
+
+- Make the app installable as a PWA: home-screen icon, standalone window,
+  and offline access to the last-loaded recipes via a service worker.
+  Requires HTTPS (or `localhost`) to install — see "Install as an App"
+  above.
 
 ### 1.2
 

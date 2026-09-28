@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#cc6b2c" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1b1712" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Degkalkylator" />
     <title>Degkalkylator</title>
     <style>
       :root {
@@ -195,7 +202,7 @@
   <body>
     <div class="wrap">
       <section class="card">
-        <h1>Anpassningsbar Degkalkylator <span class="version">v1.2</span></h1>
+        <h1>Anpassningsbar Degkalkylator <span class="version">v1.3</span></h1>
         <p class="sub">Kalkylator, instruktioner och timers för pizza, bröd och bakmaskin.</p>
 
         <label class="wake-toggle" id="wakeToggleWrap">
@@ -1049,6 +1056,12 @@
           await enableKeepAwake();
         }
       })();
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
     </script>
   </body>
 </html>

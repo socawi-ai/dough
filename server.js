@@ -4,9 +4,40 @@ const fsp = require('fs/promises');
 const path = require('path');
 
 const PORT = process.env.PORT || 3001;
-const INDEX_PATH = path.join(__dirname, 'public', 'index.html');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const INDEX_PATH = path.join(PUBLIC_DIR, 'index.html');
 const DATA_DIR = path.join(__dirname, 'data');
 const RECIPES_PATH = path.join(DATA_DIR, 'recipes.json');
+
+const STATIC_CONTENT_TYPES = {
+  '.webmanifest': 'application/manifest+json',
+  '.js': 'application/javascript; charset=utf-8',
+  '.png': 'image/png',
+};
+
+async function serveStaticFile(res, pathname) {
+  const contentType = STATIC_CONTENT_TYPES[path.extname(pathname)];
+  if (!contentType) {
+    return false;
+  }
+
+  const filePath = path.normalize(path.join(PUBLIC_DIR, pathname));
+  if (!filePath.startsWith(PUBLIC_DIR + path.sep)) {
+    res.writeHead(403);
+    res.end();
+    return true;
+  }
+
+  try {
+    const data = await fsp.readFile(filePath);
+    res.writeHead(200, { 'Content-Type': contentType });
+    res.end(data);
+  } catch {
+    res.writeHead(404);
+    res.end();
+  }
+  return true;
+}
 
 const pizzaInstructions = [
   'Blanda mjöl, vatten, salt och jäst till en smidig deg.',
@@ -231,6 +262,10 @@ const server = http.createServer(async (req, res) => {
       const html = await fsp.readFile(INDEX_PATH, 'utf8');
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(html);
+      return;
+    }
+
+    if (req.method === 'GET' && await serveStaticFile(res, url.pathname)) {
       return;
     }
 
