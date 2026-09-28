@@ -8,6 +8,31 @@ const INDEX_PATH = path.join(__dirname, 'public', 'index.html');
 const DATA_DIR = path.join(__dirname, 'data');
 const RECIPES_PATH = path.join(DATA_DIR, 'recipes.json');
 
+const pizzaInstructions = [
+  'Blanda mjöl, vatten, salt och jäst till en smidig deg.',
+  'Knåda degen i cirka 10 minuter tills den är elastisk.',
+  'Låt degen jäsa övertäckt tills den dubblat i storlek.',
+  'Dela degen i bollar och forma. Låt jäsa en kort stund till.',
+  'Kavla eller töj ut till bottnar och klä med topping.',
+  'Grädda i het ugn tills kanten är gyllenbrun.',
+].join('\n');
+
+const loafInstructions = [
+  'Blanda mjöl, vatten, salt och jäst till en deg.',
+  'Knåda degen väl och låt den jäsa övertäckt till dubbel storlek.',
+  'Forma limpor och lägg i formar eller på plåt.',
+  'Låt jäsa en andra gång tills degen känns lätt och luftig.',
+  'Grädda tills brödet låter ihåligt när du knackar på undersidan.',
+  'Låt svalna på galler innan du skär i brödet.',
+].join('\n');
+
+const machineInstructions = [
+  'Häll i vätska, olja/smör och mjölk enligt receptet.',
+  'Tillsätt mjöl så det täcker vätskan helt.',
+  'Lägg salt i ett hörn och jäst i ett annat, utan direktkontakt.',
+  'Välj program och storlek på bakmaskinen och starta.',
+].join('\n');
+
 const defaultRecipes = [
   {
     id: 'pizza-classic',
@@ -21,6 +46,10 @@ const defaultRecipes = [
     oil: 2,
     milk: 0,
     butter: 0,
+    proofMinutes: 90,
+    bakeMinutes: 8,
+    bakeTemp: 250,
+    instructions: pizzaInstructions,
   },
   {
     id: 'loaf-country',
@@ -34,6 +63,10 @@ const defaultRecipes = [
     oil: 3,
     milk: 0,
     butter: 0,
+    proofMinutes: 120,
+    bakeMinutes: 35,
+    bakeTemp: 225,
+    instructions: loafInstructions,
   },
   {
     id: 'breadmachine-basic-1000',
@@ -47,6 +80,10 @@ const defaultRecipes = [
     oil: 2,
     milk: 0,
     butter: 0,
+    proofMinutes: 0,
+    bakeMinutes: 0,
+    bakeTemp: 0,
+    instructions: machineInstructions,
   },
   {
     id: 'breadmachine-mjolkbrod-1000',
@@ -60,6 +97,10 @@ const defaultRecipes = [
     oil: 2,
     milk: 18,
     butter: 0,
+    proofMinutes: 0,
+    bakeMinutes: 0,
+    bakeTemp: 0,
+    instructions: machineInstructions,
   },
   {
     id: 'breadmachine-brioche-1000',
@@ -73,6 +114,10 @@ const defaultRecipes = [
     oil: 0,
     milk: 12,
     butter: 18,
+    proofMinutes: 0,
+    bakeMinutes: 0,
+    bakeTemp: 0,
+    instructions: machineInstructions,
   },
 ];
 
@@ -164,8 +209,13 @@ function sanitizeRecipe(input) {
     salt: Math.max(0, toNum(input.salt, 0)),
     yeast: Math.max(0, toNum(input.yeast, 0)),
     oil: Math.max(0, toNum(input.oil, 0)),
-    milk: Math.max(0, toNum(input.milk, 0)),
-    butter: Math.max(0, toNum(input.butter, 0)),
+    // Pizza dough never includes milk or butter.
+    milk: category === 'pizza' ? 0 : Math.max(0, toNum(input.milk, 0)),
+    butter: category === 'pizza' ? 0 : Math.max(0, toNum(input.butter, 0)),
+    proofMinutes: Math.max(0, Math.round(toNum(input.proofMinutes, 0))),
+    bakeMinutes: Math.max(0, Math.round(toNum(input.bakeMinutes, 0))),
+    bakeTemp: Math.max(0, Math.round(toNum(input.bakeTemp, 0))),
+    instructions: String(input.instructions || '').trim().slice(0, 4000),
   };
 }
 
