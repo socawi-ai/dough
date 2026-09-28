@@ -2,6 +2,20 @@
 
 Current version: **1.2**
 
+A recipe calculator for pizza, bread loaves, and bread-machine doughs.
+Enter the number of pieces and weight per piece, and it works out exact
+gram amounts for flour, water, salt, yeast, oil, milk, and butter.
+
+## Features
+
+- Gram-accurate dough calculator for pizza, loaf, and bread-machine recipes.
+- Save, update, and delete your own recipes per category.
+- Short, editable step-by-step instructions (in Swedish) per recipe.
+- Proofing and baking timers with an alarm and vibration, tied to each
+  recipe's suggested times.
+- "Keep screen on" toggle for phone/tablet use in the kitchen.
+- Dark mode, following your device's theme.
+
 This project is published as a ready-to-run Docker image.
 
 Image:
