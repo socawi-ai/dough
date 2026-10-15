@@ -128,3 +128,7 @@ Tunnel) if you want to install it from another device on your network.
 - Add a GitHub Actions workflow to build, scan (Trivy, fails on HIGH/CRITICAL),
   and publish the image to GHCR on every push to `main` and on version tags.
 - Pin all GitHub Actions in the publish workflow to commit SHAs.
+
+## License
+
+Licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0). You may use, change and share it; if you share a changed version, or run one as a network service for others, you must make its source available under the same license.
